@@ -1,0 +1,50 @@
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - php
+    networks:
+      - host
+  php:
+    build: ./docker/php
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=test_db
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=123
+    working_dir: /var/www/
+    volumes:
+      - ./app:/var/www
+    depends_on:
+      - mysql
+    networks:
+      - host
+  phpmyadmin:
+    image: phpmyadmin:latest
+    environment:
+      - PMA_ARBITRARY=1
+      - UPLOAD_LIMIT=1024M
+      - MEMORY_LIMIT=1024M
+      - MAX_EXECUTION_TIME=300
+    ports:
+      - "8000:80"
+    depends_on:
+      - mysql
+    networks:
+      - host
+  mysql:
+    image: mysql:8.0.29
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./mysql_php:/mysql.sql
+    networks:
+      - host
+networks:
+  host:
+    driver: bridge
