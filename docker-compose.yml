@@ -12,11 +12,6 @@ services:
       - host
   php:
     build: ./docker/php
-    environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_DATABASE=test_db
-      - MYSQL_USER=user1
-      - MYSQL_PASSWORD=123
     working_dir: /var/www/
     volumes:
       - ./app:/var/www
@@ -24,25 +19,24 @@ services:
       - mysql
     networks:
       - host
-  phpmyadmin:
-    image: phpmyadmin:latest
-    environment:
-      - PMA_ARBITRARY=1
-      - UPLOAD_LIMIT=1024M
-      - MEMORY_LIMIT=1024M
-      - MAX_EXECUTION_TIME=300
-    ports:
-      - "8000:80"
-    depends_on:
-      - mysql
-    networks:
-      - host
   mysql:
-    image: mysql:8.0.29
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
     volumes:
-      - ./mysql_php:/mysql.sql
+      - ./docker/mysql/lib/mysql:/var/lib/mysql
+      - ./docker/mysql/docker-entrypoint-initdb.d/task_db.sql:/docker-entrypoint-initdb.d/task.sql
+    networks:
+      - host
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
     networks:
       - host
 networks:

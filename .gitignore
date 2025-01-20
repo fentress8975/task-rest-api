@@ -137,3 +137,4 @@ fabric.properties
 
 
 /mysql_php/
+/docker/mysql/lib/

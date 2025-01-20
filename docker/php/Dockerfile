@@ -10,12 +10,14 @@ ENV PHP_IDE_CONFIG 'serverName=test'
 
 COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
-#ARG PUID=1000
-#ARG PGID=1000
-#RUN apk --no-cache add shadow && \
-#    groupmod -o -g ${PGID} www-data && \
-#    usermod -o -u ${PUID} -g www-data www-data
-#
-#RUN docker-php-ext-install pdo pdo_mysql
-#
-#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+ARG PUID=1000
+ARG PGID=1000
+RUN apk --no-cache add shadow && \
+    groupmod -o -g ${PGID} www-data && \
+    usermod -o -u ${PUID} -g www-data www-data
+
+RUN docker-php-ext-install pdo mysqli
+RUN docker-php-ext-enable pdo mysqli
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
