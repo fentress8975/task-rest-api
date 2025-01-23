@@ -1,12 +1,22 @@
 <?php
-//Обновление задачи
-//PUT /api/tasks/{id}
-//Описание: Обновляет информацию о задаче.
-//Тело запроса:
-//
-//{ "title": "Задача2", "description": "Задача2 описание обновленное", "due_date": "2025-01-25T18:00:00", "priority": "низкий", "status": "выполнена" }
-//
-//Ответ:
-//
-//{ "message": "Task updated successfully" }
-echo 'user update' . PHP_EOL;
+include_once "base.php";
+setPOSTHeaders();
+
+include_once PHP_DIR . "database/database.php";
+include_once API_DIR . "v1/objects/task.php";
+
+$task = createTask();
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+setFields($data, $task);
+
+if ($task->update()) {
+    http_response_code(200);
+
+    echo json_encode(array("message" => "Задача обновлена"));
+} else {
+    http_response_code(503);
+
+    echo json_encode(array("message" => "Невозможно обновить задачу"));
+}

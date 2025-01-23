@@ -18,7 +18,6 @@ class Database
             $this->db = new mysqli($this->host, $this->user, $this->password, $this->dbname, $this->port);
             $this->db->set_charset($this->charset);
             $this->db->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
-            echo "Подключился как  $this->user к $this->dbname" . PHP_EOL;
             return $this->db;
         } catch (\Throwable $th) {
             echo "Ошибка подключения к БД: ". PHP_EOL;
@@ -29,6 +28,6 @@ class Database
 
     function __destruct()
     {
-        echo 'DB connection died' . PHP_EOL;
+        //echo 'DB connection died' . PHP_EOL;
     }
 }

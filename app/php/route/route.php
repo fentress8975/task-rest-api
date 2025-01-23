@@ -1,5 +1,6 @@
 <?php
 const API_DIR = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR;
+const PHP_DIR = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
 if (!($_SERVER["REQUEST_URI"])) {
     http_response_code(400);
@@ -24,12 +25,13 @@ if ($arg[1] === "api") {
             die();
             break;
     }
+} else if ($arg[1] === "edit") {
+
 }
 
 function executeTaskMethod($arg)
 {
-    if ($_SERVER["REQUEST_METHOD"] === "GET") $arg = explode("?", $arg);
-    switch ($arg[0]) {
+    switch ($arg) {
         case 'create':
             include_once API_DIR . "v1/task/create.php";
             break;
@@ -48,7 +50,7 @@ function executeTaskMethod($arg)
         default:
             http_response_code(400);
             echo "Такого метода не существует $arg[0]";
-            die();
             break;
     }
+    die();
 }

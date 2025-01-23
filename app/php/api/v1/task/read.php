@@ -1,15 +1,25 @@
 <?php
-//Получение списка задач
-//GET /api/tasks
-//Описание: Возвращает список задач с возможностью поиска и сортировки.
-//Параметры запроса (опционально):
-//
-//search: поиск по названию.
-//sort: due_date, created_at.
-//Пример запроса:
-///api/tasks?search=Задача1&sort=due_date
-//
-//    Ответ:
-//
-//[ { "id": 1, "title": "Задача1", "description": "Задача1 описание", "due_date": "2025-01-20T15:00:00", "create_date": "2025-01-20T15:00:00", "status": "pending", "priority": "высокий", "category": "Работа", "status": "не выполнена" } ]
-echo 'user read' . PHP_EOL;
+include_once "base.php";
+setGETHeaders();
+
+include_once PHP_DIR . "database/database.php";
+include_once API_DIR . "v1/objects/task.php";
+
+$task = createTask();
+
+$task->read();
+
+$stmt = $task->read()->get_result();
+$num = $stmt->num_rows;
+
+if ($num > 0) {
+    $tasksList = createJsonListOfTasks($stmt);
+
+    http_response_code(200);
+
+    echo json_encode($tasksList);
+} else {
+    http_response_code(404);
+
+    echo json_encode(array("message" => "Задачи не найдены"));
+}
