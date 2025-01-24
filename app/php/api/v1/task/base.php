@@ -34,24 +34,39 @@ function checkRequiredFields(mixed $data): bool
         !empty($data['category']);
 }
 
-function setFields(mixed $data, Task $task): void
+function setFields(Task $task, $data = null): void
 {
+    if (!isset($data)) {
+        $data = json_decode(file_get_contents('php://input'), true);
+    }
+
     if (!empty($data['id'])) {
         $task->id = $data['id'];
     }
-    $task->name = $data['name'];
+    if (!empty($data['name'])) {
+        $task->name = $data['name'];
+    }
     if (!empty($data['description'])) {
         $task->description = $data['description'];
     }
-    $task->due_date = $data['due_date'];
+    if (!empty($data['due_date'])) {
+        $task->due_date = $data['due_date'];
+    }
     if (!empty($data['created_at'])) {
         $task->created_at = $data['created_at'];
     }
     if (!empty($data['status'])) {
         $task->status = $data['status'];
     }
-    $task->priority = $data['priority'];
-    $task->category = $data['category'];
+    if (!empty($data['priority'])) {
+        $task->priority = $data['priority'];
+    }
+    if (!empty($data['category'])) {
+        $task->category = $data['category'];
+    }
+    if (!empty($data['deleted'])) {
+        $task->deleted = $data['deleted'];
+    }
 }
 
 function createJsonListOfTasks($stmt)

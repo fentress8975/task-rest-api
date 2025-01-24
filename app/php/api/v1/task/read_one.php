@@ -8,9 +8,10 @@ include_once API_DIR . "v1/objects/task.php";
 $task = createTask();
 
 setID($task);
+$task->readOne();
 
 if ($task->id != null) {
-    $task->readOne();
+
     $tasks_arr = array(
         "id" => $task->id,
         "description" => $task->description,

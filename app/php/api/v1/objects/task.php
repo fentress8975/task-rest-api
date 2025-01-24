@@ -20,6 +20,8 @@ class Task
     public int $pageCount;
     public int $offset;
     public int $itemsPerPage;
+    public int $insertedId;
+
 
     public string $sortColumnParam = 'ASC';
     public string $sortColumnName = 'id';
@@ -49,13 +51,17 @@ class Task
         $stmt->execute([$this->id]);
         $row = $stmt->get_result()->fetch_assoc();
 
-        $this->name = $row['name'];
-        $this->description = $row['description'];
-        $this->due_date = $row['due_date'];
-        $this->created_at = $row['created_at'];
-        $this->status = $row['status'];
-        $this->priority = $row['priority'];
-        $this->category = $row['category'];
+        if (!isset($row)) {
+            $this->id = null;
+        } else {
+            $this->name = $row['name'];
+            $this->description = $row['description'];
+            $this->due_date = $row['due_date'];
+            $this->created_at = $row['created_at'];
+            $this->status = $row['status'];
+            $this->priority = $row['priority'];
+            $this->category = $row['category'];
+        }
     }
 
     function create()
@@ -65,6 +71,7 @@ class Task
         $this->prepareSQLCreateQuery($sql, $values);
         $stmt = $this->db->prepare($sql);
         if ($stmt->execute($values)) {
+            $this->insertedId = $stmt->insert_id;
             return true;
         }
 
@@ -123,27 +130,27 @@ class Task
     {
         $sql = "UPDATE {$this->table_name} SET ";
         if (!empty($this->name)) {
-            $sql .= "name = ?, ";
+            $sql .= "name = ?,";
             $args[] = $this->name;
         }
         if (!empty($this->description)) {
-            $sql .= "description = ?, ";
+            $sql .= "description = ?,";
             $args[] = $this->description;
         }
         if (!empty($this->due_date)) {
-            $sql .= "due_date = ?, ";
+            $sql .= "due_date = ?,";
             $args[] = $this->due_date;
         }
         if (!empty($this->created_at)) {
-            $sql .= "created_at = ?, ";
+            $sql .= "created_at = ?,";
             $args[] = $this->created_at;
         }
         if (!empty($this->status)) {
-            $sql .= "status = ?, ";
+            $sql .= "status = ?,";
             $args[] = $this->status;
         }
         if (!empty($this->priority)) {
-            $sql .= "priority = ?, ";
+            $sql .= "priority = ?,";
             $args[] = $this->priority;
         }
         if (!empty($this->category)) {

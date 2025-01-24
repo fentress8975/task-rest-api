@@ -9,7 +9,7 @@ $task = createTask();
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-setFields($data, $task);
+setFields($task);
 
 if ($task->update()) {
     http_response_code(200);

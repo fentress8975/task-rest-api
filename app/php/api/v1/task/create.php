@@ -12,12 +12,13 @@ $data = json_decode(file_get_contents('php://input'), true);
 if (
     checkRequiredFields($data)
 ) {
-    setFields($data, $task);
+    setFields($task);
 
     if ($task->create()) {
+
         http_response_code(201);
 
-        echo json_encode(array("message" => "Задача создана"));
+        echo json_encode(array("id"=>$task->insertedId,"message" => "Задача создана"));
     } else {
         http_response_code(503);
 
