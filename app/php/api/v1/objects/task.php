@@ -3,9 +3,6 @@
 class Task
 {
 
-    /**
-     * @var mysqli|database connection to db
-     */
     private mysqli $db;
     private string $table_name = 'tasks';
 
@@ -40,7 +37,7 @@ class Task
 
     /**
      * Init object with working connection
-     * @param $db database connection for sql queries
+     *
      */
     function __construct($db)
     {
@@ -49,7 +46,7 @@ class Task
 
 
     /**
-     * select all rows and colums(exclude deleted) from table in var $table_name
+     * select all rows and columns(exclude deleted) from table in var $table_name
      * @return false|mysqli_stmt - stmt object for manipulating data
      */
     function read(): false|mysqli_stmt
@@ -80,7 +77,7 @@ class Task
             $this->id = -1;
         } else {
             $this->name = $row['name'];
-            $this->description = $row['description'];
+            $this->description = $row['description']??'';
             $this->due_date = $row['due_date'];
             $this->created_at = $row['created_at'];
             $this->status = $row['status'];
@@ -90,7 +87,7 @@ class Task
     }
 
     /**
-     * Create new row in table by given required varibles(name,due_date,priority,category), Non required have default value.
+     * Create new row in table by given required variables(name,due_date,priority,category), Non required have default value.
      * Store id of new row in $insertedId
      * @return bool
      */
@@ -110,8 +107,8 @@ class Task
 
     /**
      * Generate param query for given columns
-     * @param $sql query string
-     * @param $values param values
+     * @param $sql
+     * @param $values
      * @return void
      */
     private function prepareSQLCreateQuery(&$sql, &$values): void
@@ -173,8 +170,8 @@ class Task
 
     /**
      * Generate param query for given columns
-     * @param $sql query string
-     * @param $args param values
+     * @param $sql
+     * @param $args
      * @return void
      */
     function prepareSQLUpdateQuery(&$sql, &$args): void

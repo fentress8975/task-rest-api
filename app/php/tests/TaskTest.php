@@ -15,16 +15,16 @@ class TaskTest extends TestCase
     public static function deleteDataProvider()
     {
         return array(
-            array(15, null),
-            array(20, null),
-            array(25, null)
+            array(15, -1),
+            array(20, -1),
+            array(25, -1)
         );
     }
 
     public static function readOneDataProvider()
     {
         return array(
-            array(1, null),
+            array(1, -1),
             array(5, 5),
             array(10, 10)
         );
@@ -78,7 +78,7 @@ class TaskTest extends TestCase
         $this->task->delete();
 
         $this->task->readOne();
-        $this->assertEquals($this->task->deleted, $expected);
+        $this->assertEquals($this->task->id, $expected);
     }
 
 
