@@ -5,5 +5,4 @@ require_once '../php/database/database.php';
 $database = new Database();
 $db = $database->getConnection();
 
-require_once '../view/main.php';
 ?>

@@ -31,7 +31,8 @@ if ($arg[1] === "api") {
 
 function executeTaskMethod($arg)
 {
-    switch ($arg) {
+    $arg = explode("?", $arg);
+    switch ($arg[0]) {
         case 'create':
             include_once API_DIR . "v1/task/create.php";
             break;

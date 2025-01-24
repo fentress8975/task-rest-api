@@ -9,14 +9,14 @@ $task = createTask();
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$task->name = $data['name'];
+setID($task);
 
 if ($task->delete()) {
     http_response_code(200);
 
-    echo json_encode(array("message" => "Пользователь был удалён"));
+    echo json_encode(array("message" => "Задача была удалена"));
 } else {
     http_response_code(503);
 
-    echo json_encode(array("message" => "Не удалось удалить пользователя"));
+    echo json_encode(array("message" => "Не удалось удалить задачу"));
 }

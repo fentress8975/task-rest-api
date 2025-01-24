@@ -7,10 +7,10 @@ include_once API_DIR . "v1/objects/task.php";
 
 $task = createTask();
 
-$task->id = getID();
-$task->readOne();
+setID($task);
 
 if ($task->id != null) {
+    $task->readOne();
     $tasks_arr = array(
         "id" => $task->id,
         "description" => $task->description,
@@ -28,10 +28,4 @@ if ($task->id != null) {
     http_response_code(404);
 
     echo json_encode(array("message" => "Такой задачи нет"));
-}
-
-function getID()
-{
-    $id = explode('/',$_SERVER["REQUEST_URI"]);
-    return end($id);
 }

@@ -6,7 +6,7 @@ include_once PHP_DIR . "database/database.php";
 include_once API_DIR . "v1/objects/task.php";
 
 $task = createTask();
-
+setSortParams($task);
 $task->read();
 
 $stmt = $task->read()->get_result();
