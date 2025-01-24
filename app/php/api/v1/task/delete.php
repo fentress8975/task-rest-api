@@ -1,6 +1,6 @@
 <?php
 include_once "base.php";
-setPOSTHeaders();
+setDELETEHeaders();
 
 include_once PHP_DIR . "database/database.php";
 include_once API_DIR . "v1/objects/task.php";

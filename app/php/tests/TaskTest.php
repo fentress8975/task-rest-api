@@ -91,7 +91,7 @@ class TaskTest extends TestCase
         $this->task->name = $expected;
         $this->task->update();
 
-        $this->task->name = null;
+        unset($this->task->name);
 
         $this->task->readOne();
         $this->assertEquals($this->task->name, $expected);

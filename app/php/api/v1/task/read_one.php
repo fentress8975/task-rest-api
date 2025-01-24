@@ -10,7 +10,7 @@ $task = createTask();
 setID($task);
 $task->readOne();
 
-if ($task->id != null) {
+if ($task->id != -1) {
 
     $tasks_arr = array(
         "id" => $task->id,

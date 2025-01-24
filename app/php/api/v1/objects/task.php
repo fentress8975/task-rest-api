@@ -3,35 +3,56 @@
 class Task
 {
 
+    /**
+     * @var mysqli|database connection to db
+     */
     private mysqli $db;
-    private $table_name = 'tasks';
+    private string $table_name = 'tasks';
 
-    public $id;
-    public $name;
-    public $description;
-    public $due_date;
-    public $created_at;
-    public $status;
-    public $priority;
-    public $category;
-    public $deleted;
+    public int $id;
+    public string $name;
+    public string $description;
+    public string $due_date;
+    public string $created_at;
+    public bool $status;
+    public string $priority;
+    public string $category;
+    public bool $deleted;
 
+    /**
+     * @var int current page in pagination
+     */
     public int $page;
+    /**
+     * @var int max page count by given value of $itemsPerPage and rows in table
+     */
     public int $pageCount;
     public int $offset;
     public int $itemsPerPage;
+    /**
+     * @var int stored id of created row
+     */
     public int $insertedId;
 
 
     public string $sortColumnParam = 'ASC';
     public string $sortColumnName = 'id';
 
+    /**
+     * Init object with working connection
+     * @param $db database connection for sql queries
+     */
     function __construct($db)
     {
         $this->db = $db;
     }
 
-    function read($sortColumnParam = '', $sortColumnName = '')
+
+    /**
+     * select all rows and colums(exclude deleted) from table in var $table_name
+     * @return false|mysqli_stmt - stmt object for manipulating data
+     */
+    function read(): false|mysqli_stmt
     {
         $this->prepareSQLParams();
         $sql = "SELECT id, name, description, due_date, created_at, status, priority, category 
@@ -44,7 +65,11 @@ class Task
         return $stmt;
     }
 
-    function readOne()
+    /**
+     * read only one row by given id in var $id. Store all data inside object vars.
+     * @return void
+     */
+    function readOne(): void
     {
         $sql = "SELECT name, description, due_date, created_at, status, priority, category FROM $this->table_name WHERE id = ? AND deleted = 0";
         $stmt = $this->db->prepare($sql);
@@ -52,7 +77,7 @@ class Task
         $row = $stmt->get_result()->fetch_assoc();
 
         if (!isset($row)) {
-            $this->id = null;
+            $this->id = -1;
         } else {
             $this->name = $row['name'];
             $this->description = $row['description'];
@@ -64,7 +89,12 @@ class Task
         }
     }
 
-    function create()
+    /**
+     * Create new row in table by given required varibles(name,due_date,priority,category), Non required have default value.
+     * Store id of new row in $insertedId
+     * @return bool
+     */
+    function create(): bool
     {
         $sql = '';
         $values = array();
@@ -78,7 +108,13 @@ class Task
         return false;
     }
 
-    function prepareSQLCreateQuery(&$sql, &$values)
+    /**
+     * Generate param query for given columns
+     * @param $sql query string
+     * @param $values param values
+     * @return void
+     */
+    private function prepareSQLCreateQuery(&$sql, &$values): void
     {
         $sql = "INSERT INTO $this->table_name(name,due_date,priority,category";
         $values = [$this->name, $this->due_date, $this->priority, $this->category];
@@ -100,19 +136,28 @@ class Task
         $sql .= ")";
     }
 
-    function delete()
+    /**
+     * Set colum deleted to True for given row by id.
+     * @return bool
+     */
+    function delete(): bool
     {
-        $sql = "UPDATE {$this->table_name} SET deleted = 1 WHERE id = ?";
+        $sql = "UPDATE $this->table_name SET deleted = 1 WHERE id = ?";
 
         $stmt = $this->db->prepare($sql);
-        if ($stmt->execute([$this->id])) {
-            return true;
-        } else {
+        $stmt->execute([$this->id]);
+        if ($stmt->affected_rows === 0) {
             return false;
+        } else {
+            return true;
         }
     }
 
-    function update()
+    /**
+     * update row by id. use given values. Values for columns stored inside class vars
+     * @return bool
+     */
+    function update(): bool
     {
         $sql = '';
         $values = array();
@@ -126,9 +171,15 @@ class Task
         return false;
     }
 
-    function prepareSQLUpdateQuery(&$sql, &$args)
+    /**
+     * Generate param query for given columns
+     * @param $sql query string
+     * @param $args param values
+     * @return void
+     */
+    function prepareSQLUpdateQuery(&$sql, &$args): void
     {
-        $sql = "UPDATE {$this->table_name} SET ";
+        $sql = "UPDATE $this->table_name SET ";
         if (!empty($this->name)) {
             $sql .= "name = ?,";
             $args[] = $this->name;
@@ -162,21 +213,24 @@ class Task
         $args[] = $this->id;
     }
 
-    private function prepareSQLParams()
+    private function prepareSQLParams(): void
     {
         $this->preparePagination();
-        $this->getPageCount();
         $this->getSortOrder();
         $this->getSortColumn();
     }
 
-    private function preparePagination()
+    private function preparePagination(): void
     {
         $this->pageCount = $this->getPageCount();
         $this->offset = ($this->page - 1) * $this->itemsPerPage;
     }
 
-    private function getPageCount()
+    /**
+     * Calculate pages for given $itemsPerPage
+     * @return int
+     */
+    private function getPageCount(): int
     {
         $sql = "SELECT COUNT(*) AS cnt FROM $this->table_name";
         $stmt = $this->db->prepare($sql);
@@ -185,7 +239,11 @@ class Task
         return ceil($result["cnt"] / $this->itemsPerPage);
     }
 
-    private function getSortOrder()
+    /**
+     * Check for given sort Order given by user, Use default if given incorrect.
+     * @return void
+     */
+    private function getSortOrder(): void
     {
         $this->sortColumnParam = match (strtoupper($this->sortColumnParam)) {
             'DESC' => "DESC",
@@ -193,7 +251,11 @@ class Task
         };
     }
 
-    private function getSortColumn()
+    /**
+     * Check for given sort column Name given by user, Use default if given incorrect.
+     * @return void
+     */
+    private function getSortColumn(): void
     {
         $sql = "SELECT * FROM $this->table_name WHERE deleted = 0 LIMIT 1";
         $stmt = $this->db->prepare($sql);

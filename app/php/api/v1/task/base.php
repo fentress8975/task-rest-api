@@ -1,4 +1,8 @@
 <?php
+/**
+ * Create Task object with db connection
+ * @return Task
+ */
 function createTask()
 {
     $database = new Database();
@@ -8,6 +12,10 @@ function createTask()
     return $task;
 }
 
+/**
+ * Set basic POST headers
+ * @return void
+ */
 function setPOSTHeaders()
 {
     header("Access-Control-Allow-Origin: *");
@@ -17,6 +25,10 @@ function setPOSTHeaders()
     header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 }
 
+/**
+ * Set base GET headers
+ * @return void
+ */
 function setGETHeaders()
 {
     header("Access-Control-Allow-Origin: *");
@@ -26,6 +38,19 @@ function setGETHeaders()
     header("Content-Type: application/json");
 }
 
+function setDeleteHeaders(){
+    header("Access-Control-Allow-Origin: *");
+    header("Content-Type: application/json; charset=UTF-8");
+    header("Access-Control-Allow-Methods: DELETE");
+    header("Access-Control-Max-Age: 3600");
+    header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+}
+
+/**
+ * Check array for all needed columns for create
+ * @param mixed $data
+ * @return bool
+ */
 function checkRequiredFields(mixed $data): bool
 {
     return !empty($data['name']) &&
@@ -34,6 +59,12 @@ function checkRequiredFields(mixed $data): bool
         !empty($data['category']);
 }
 
+/**
+ * Set given values for rows in Task object
+ * @param Task $task object where values setup
+ * @param $data array with associated values
+ * @return void
+ */
 function setFields(Task $task, $data = null): void
 {
     if (!isset($data)) {
@@ -69,6 +100,11 @@ function setFields(Task $task, $data = null): void
     }
 }
 
+/**
+ * Generate json array to front
+ * @param $stmt
+ * @return array
+ */
 function createJsonListOfTasks($stmt)
 {
     $tasksList = array();
@@ -91,6 +127,11 @@ function createJsonListOfTasks($stmt)
     return $tasksList;
 }
 
+/**
+ * Set gived sorted params inside Task object
+ * @param Task $task
+ * @return void
+ */
 function setSortParams(Task $task)
 {
     $task->sortColumnName = $_GET["sortColumnName"] ?? '';
@@ -99,14 +140,24 @@ function setSortParams(Task $task)
     $task->itemsPerPage = $_GET["itemsPerPage"] ?? 20;
 }
 
+/**
+ * Set given id in Task object. Search id in body or request_uri
+ * @param $task
+ * @return void
+ */
 function setID($task)
 {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $data = json_decode(file_get_contents('php://input'), true);
         $task->id = $data['id'];
-    }
-    if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    } else {
+        $id = explode('/', $_SERVER['REQUEST_URI']);
+        $id = intval(array_pop($id));
+        if ($id) {
+            $task->id = $id;
+        } else {
+            $task->id = -1;
+        }
 
-        $task->id = $_GET["id"] ?? null;
     }
 }

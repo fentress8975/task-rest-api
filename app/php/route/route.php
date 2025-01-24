@@ -23,13 +23,12 @@ if ($arg[1] === "api") {
             http_response_code(400);
             echo "Неверный запрос {$_SERVER["REQUEST_URI"]}";
             die();
-            break;
     }
-} else if ($arg[1] === "edit") {
+
 
 }
 
-function executeTaskMethod($arg)
+function executeTaskMethod($arg): void
 {
     $arg = explode("?", $arg);
     switch ($arg[0]) {
